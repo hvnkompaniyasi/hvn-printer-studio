@@ -23,6 +23,7 @@ export default function Studio({ initialTemplate, onBackToHome }) {
   const [paperFormat, setPaperFormat] = useState('80x297');
   const [elements, setElements] = useState([]);
   const [selectedId, setSelectedId] = useState(null);
+  const [editingId, setEditingId] = useState(null);
   const [zoom, setZoom] = useState(1);
   
   // History state
@@ -141,6 +142,11 @@ export default function Studio({ initialTemplate, onBackToHome }) {
   const handleElementMouseDown = (e, el, action) => {
     e.stopPropagation();
     setSelectedId(el.id);
+
+    // If this text element is currently being edited, don't start dragging
+    if (editingId === el.id && action === 'drag') {
+      return;
+    }
     
     // Disable text selection drag during sizing/dragging
     e.preventDefault();
@@ -341,6 +347,184 @@ export default function Studio({ initialTemplate, onBackToHome }) {
           </div>
         </div>
 
+        {/* Selected Element Properties inside Sidebar */}
+        {selectedElement && (
+          <div className="panel-section" style={{ border: '1px dashed rgba(139, 92, 246, 0.3)', padding: '12px', borderRadius: '12px', background: 'rgba(255, 255, 255, 0.2)' }}>
+            <span className="panel-title" style={{ fontSize: '0.8rem', color: 'var(--purple-dark)' }}>
+              {selectedElement.type === 'text' ? 'Matn Sozlamalari' : 'Rasm Sozlamalari'}
+            </span>
+            
+            {selectedElement.type === 'text' ? (
+              <>
+                {/* Font Size */}
+                <div className="property-group">
+                  <label className="property-label">Shrift oʻlchami ({selectedElement.fontSize}px)</label>
+                  <input 
+                    type="range" 
+                    min="10" 
+                    max="80" 
+                    value={selectedElement.fontSize}
+                    onChange={(e) => updateElementProp(selectedElement.id, 'fontSize', parseInt(e.target.value))}
+                    onMouseUp={handlePropChangeComplete}
+                    onTouchEnd={handlePropChangeComplete}
+                    className="liquid-input"
+                    style={{ padding: '0', height: '8px', width: '100%' }}
+                  />
+                </div>
+
+                {/* Font Family */}
+                <div className="property-group">
+                  <label className="property-label">Shrift Oilasi</label>
+                  <select 
+                    className="liquid-select"
+                    value={selectedElement.fontFamily}
+                    onChange={(e) => {
+                      updateElementProp(selectedElement.id, 'fontFamily', e.target.value);
+                      pushToHistory(elements.map(el => el.id === selectedElement.id ? { ...el, fontFamily: e.target.value } : el));
+                    }}
+                    style={{ width: '100%', padding: '6px' }}
+                  >
+                    {FONTS.map(font => (
+                      <option key={font} value={font}>{font}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Text Alignment */}
+                <div className="property-group">
+                  <label className="property-label">Tekislash</label>
+                  <div className="button-group-row">
+                    <button 
+                      className={`glass-btn prop-icon-btn ${selectedElement.textAlign === 'left' ? 'active' : ''}`}
+                      onClick={() => {
+                        updateElementProp(selectedElement.id, 'textAlign', 'left');
+                        pushToHistory(elements.map(el => el.id === selectedElement.id ? { ...el, textAlign: 'left' } : el));
+                      }}
+                      style={{ padding: '6px' }}
+                    >
+                      <AlignLeft size={14} />
+                    </button>
+                    <button 
+                      className={`glass-btn prop-icon-btn ${selectedElement.textAlign === 'center' ? 'active' : ''}`}
+                      onClick={() => {
+                        updateElementProp(selectedElement.id, 'textAlign', 'center');
+                        pushToHistory(elements.map(el => el.id === selectedElement.id ? { ...el, textAlign: 'center' } : el));
+                      }}
+                      style={{ padding: '6px' }}
+                    >
+                      <AlignCenter size={14} />
+                    </button>
+                    <button 
+                      className={`glass-btn prop-icon-btn ${selectedElement.textAlign === 'right' ? 'active' : ''}`}
+                      onClick={() => {
+                        updateElementProp(selectedElement.id, 'textAlign', 'right');
+                        pushToHistory(elements.map(el => el.id === selectedElement.id ? { ...el, textAlign: 'right' } : el));
+                      }}
+                      style={{ padding: '6px' }}
+                    >
+                      <AlignRight size={14} />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Font Style weight */}
+                <div className="property-group">
+                  <label className="property-label">Uslub</label>
+                  <div className="button-group-row">
+                    <button 
+                      className={`glass-btn prop-icon-btn ${selectedElement.fontWeight === '700' ? 'active' : ''}`}
+                      onClick={() => {
+                        const newWeight = selectedElement.fontWeight === '700' ? '500' : '700';
+                        updateElementProp(selectedElement.id, 'fontWeight', newWeight);
+                        pushToHistory(elements.map(el => el.id === selectedElement.id ? { ...el, fontWeight: newWeight } : el));
+                      }}
+                      style={{ padding: '6px' }}
+                    >
+                      <Bold size={14} />
+                    </button>
+                    <button 
+                      className={`glass-btn prop-icon-btn ${selectedElement.fontStyle === 'italic' ? 'active' : ''}`}
+                      onClick={() => {
+                        const newStyle = selectedElement.fontStyle === 'italic' ? 'normal' : 'italic';
+                        updateElementProp(selectedElement.id, 'fontStyle', newStyle);
+                        pushToHistory(elements.map(el => el.id === selectedElement.id ? { ...el, fontStyle: newStyle } : el));
+                      }}
+                      style={{ padding: '6px' }}
+                    >
+                      <Italic size={14} />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Colors */}
+                <div className="property-group">
+                  <label className="property-label">Rang</label>
+                  <div className="color-selector">
+                    {COLORS.map(c => (
+                      <div
+                        key={c}
+                        className={`color-dot ${selectedElement.color === c ? 'active' : ''}`}
+                        style={{ backgroundColor: c, width: '18px', height: '18px' }}
+                        onClick={() => {
+                          updateElementProp(selectedElement.id, 'color', c);
+                          pushToHistory(elements.map(el => el.id === selectedElement.id ? { ...el, color: c } : el));
+                        }}
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                {/* Layer Ordering and Delete */}
+                <div className="property-group" style={{ marginTop: '8px', borderTop: '1px solid rgba(255,255,255,0.2)', paddingTop: '8px' }}>
+                  <label className="property-label">Qatlam Tartibi</label>
+                  <div className="button-group-row" style={{ marginBottom: '8px' }}>
+                    <button className="glass-btn prop-icon-btn" onClick={() => moveLayer(selectedElement.id, 'up')} style={{ padding: '6px', fontSize: '0.75rem' }}>
+                      <ChevronUp size={12} />
+                      Ustiga
+                    </button>
+                    <button className="glass-btn prop-icon-btn" onClick={() => moveLayer(selectedElement.id, 'down')} style={{ padding: '6px', fontSize: '0.75rem' }}>
+                      <ChevronDown size={12} />
+                      Ostiga
+                    </button>
+                  </div>
+                  <button 
+                    className="glass-btn" 
+                    style={{ width: '100%', borderColor: '#ff4757', color: '#ff4757', background: 'rgba(255, 71, 87, 0.05)', fontSize: '0.75rem', padding: '6px 12px' }}
+                    onClick={() => handleDeleteElement(selectedElement.id)}
+                  >
+                    <Trash2 size={12} />
+                    Oʻchirish
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="property-group">
+                  <label className="property-label">Harakatlar</label>
+                  <div className="button-group-row" style={{ marginBottom: '8px' }}>
+                    <button className="glass-btn prop-icon-btn" onClick={() => moveLayer(selectedElement.id, 'up')} style={{ padding: '6px', fontSize: '0.75rem' }}>
+                      <ChevronUp size={12} />
+                      Ustiga
+                    </button>
+                    <button className="glass-btn prop-icon-btn" onClick={() => moveLayer(selectedElement.id, 'down')} style={{ padding: '6px', fontSize: '0.75rem' }}>
+                      <ChevronDown size={12} />
+                      Ostiga
+                    </button>
+                  </div>
+                  <button 
+                    className="glass-btn" 
+                    style={{ width: '100%', borderColor: '#ff4757', color: '#ff4757', background: 'rgba(255, 71, 87, 0.05)', fontSize: '0.75rem', padding: '6px 12px' }}
+                    onClick={() => handleDeleteElement(selectedElement.id)}
+                  >
+                    <Trash2 size={12} />
+                    Oʻchirish
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        )}
+
         {/* Paper Formats */}
         <div className="panel-section">
           <span className="panel-title">Qogʻoz Formati</span>
@@ -434,7 +618,7 @@ export default function Studio({ initialTemplate, onBackToHome }) {
         </div>
 
         {/* Scrollable grid area for sheet */}
-        <div className="canvas-scroll-container" onClick={() => setSelectedId(null)}>
+        <div className="canvas-scroll-container" onClick={() => { setSelectedId(null); setEditingId(null); }}>
           {/* Print container wrapping print sheet */}
           <div className="print-wrapper">
             <div 
@@ -469,10 +653,27 @@ export default function Studio({ initialTemplate, onBackToHome }) {
                   {el.type === 'text' ? (
                     <div
                       className="element-text-content"
-                      contentEditable
+                      contentEditable={editingId === el.id}
                       suppressContentEditableWarning
+                      onDoubleClick={(e) => {
+                        e.stopPropagation();
+                        setEditingId(el.id);
+                        // Focus and place cursor at click position
+                        setTimeout(() => {
+                          const textDiv = e.target;
+                          textDiv.focus();
+                          // Place cursor at end
+                          const range = document.createRange();
+                          const sel = window.getSelection();
+                          range.selectNodeContents(textDiv);
+                          range.collapse(false);
+                          sel.removeAllRanges();
+                          sel.addRange(range);
+                        }, 0);
+                      }}
                       onBlur={(e) => {
                         handleTextChange(e, el.id);
+                        setEditingId(null);
                         handlePropChangeComplete();
                       }}
                       style={{
@@ -481,7 +682,9 @@ export default function Studio({ initialTemplate, onBackToHome }) {
                         fontWeight: el.fontWeight,
                         fontStyle: el.fontStyle,
                         textAlign: el.textAlign,
-                        color: el.color
+                        color: el.color,
+                        cursor: editingId === el.id ? 'text' : 'move',
+                        minHeight: '1em'
                       }}
                     >
                       {el.content}
@@ -516,177 +719,7 @@ export default function Studio({ initialTemplate, onBackToHome }) {
           </div>
         </div>
 
-        {/* Floating Element Properties Selector Panel */}
-        {selectedElement && selectedElement.type === 'text' && (
-          <div className="properties-panel glass-card glow-card-purple no-print" onClick={(e) => e.stopPropagation()}>
-            <span className="panel-title" style={{ marginBottom: '12px', display: 'block' }}>Matn Sozlamalari</span>
-            
-            {/* Font Size */}
-            <div className="property-group">
-              <label className="property-label">Shrift oʻlchami ({selectedElement.fontSize}px)</label>
-              <input 
-                type="range" 
-                min="10" 
-                max="80" 
-                value={selectedElement.fontSize}
-                onChange={(e) => updateElementProp(selectedElement.id, 'fontSize', parseInt(e.target.value))}
-                onMouseUp={handlePropChangeComplete}
-                onTouchEnd={handlePropChangeComplete}
-                className="liquid-input"
-                style={{ padding: '0', height: '8px' }}
-              />
-            </div>
 
-            {/* Font Family */}
-            <div className="property-group">
-              <label className="property-label">Shrift Oilasi</label>
-              <select 
-                className="liquid-select"
-                value={selectedElement.fontFamily}
-                onChange={(e) => {
-                  updateElementProp(selectedElement.id, 'fontFamily', e.target.value);
-                  pushToHistory(elements.map(el => el.id === selectedElement.id ? { ...el, fontFamily: e.target.value } : el));
-                }}
-              >
-                {FONTS.map(font => (
-                  <option key={font} value={font}>{font}</option>
-                ))}
-              </select>
-            </div>
-
-            {/* Text Alignment */}
-            <div className="property-group">
-              <label className="property-label">Tekislash</label>
-              <div className="button-group-row">
-                <button 
-                  className={`glass-btn prop-icon-btn ${selectedElement.textAlign === 'left' ? 'active' : ''}`}
-                  onClick={() => {
-                    updateElementProp(selectedElement.id, 'textAlign', 'left');
-                    pushToHistory(elements.map(el => el.id === selectedElement.id ? { ...el, textAlign: 'left' } : el));
-                  }}
-                >
-                  <AlignLeft size={14} />
-                </button>
-                <button 
-                  className={`glass-btn prop-icon-btn ${selectedElement.textAlign === 'center' ? 'active' : ''}`}
-                  onClick={() => {
-                    updateElementProp(selectedElement.id, 'textAlign', 'center');
-                    pushToHistory(elements.map(el => el.id === selectedElement.id ? { ...el, textAlign: 'center' } : el));
-                  }}
-                >
-                  <AlignCenter size={14} />
-                </button>
-                <button 
-                  className={`glass-btn prop-icon-btn ${selectedElement.textAlign === 'right' ? 'active' : ''}`}
-                  onClick={() => {
-                    updateElementProp(selectedElement.id, 'textAlign', 'right');
-                    pushToHistory(elements.map(el => el.id === selectedElement.id ? { ...el, textAlign: 'right' } : el));
-                  }}
-                >
-                  <AlignRight size={14} />
-                </button>
-              </div>
-            </div>
-
-            {/* Font Style weight */}
-            <div className="property-group">
-              <label className="property-label">Uslub</label>
-              <div className="button-group-row">
-                <button 
-                  className={`glass-btn prop-icon-btn ${selectedElement.fontWeight === '700' ? 'active' : ''}`}
-                  onClick={() => {
-                    const newWeight = selectedElement.fontWeight === '700' ? '500' : '700';
-                    updateElementProp(selectedElement.id, 'fontWeight', newWeight);
-                    pushToHistory(elements.map(el => el.id === selectedElement.id ? { ...el, fontWeight: newWeight } : el));
-                  }}
-                >
-                  <Bold size={14} />
-                </button>
-                <button 
-                  className={`glass-btn prop-icon-btn ${selectedElement.fontStyle === 'italic' ? 'active' : ''}`}
-                  onClick={() => {
-                    const newStyle = selectedElement.fontStyle === 'italic' ? 'normal' : 'italic';
-                    updateElementProp(selectedElement.id, 'fontStyle', newStyle);
-                    pushToHistory(elements.map(el => el.id === selectedElement.id ? { ...el, fontStyle: newStyle } : el));
-                  }}
-                >
-                  <Italic size={14} />
-                </button>
-              </div>
-            </div>
-
-            {/* Colors */}
-            <div className="property-group">
-              <label className="property-label">Rang</label>
-              <div className="color-selector">
-                {COLORS.map(c => (
-                  <div
-                    key={c}
-                    className={`color-dot ${selectedElement.color === c ? 'active' : ''}`}
-                    style={{ backgroundColor: c }}
-                    onClick={() => {
-                      updateElementProp(selectedElement.id, 'color', c);
-                      pushToHistory(elements.map(el => el.id === selectedElement.id ? { ...el, color: c } : el));
-                    }}
-                  />
-                ))}
-              </div>
-            </div>
-
-            {/* Layer Ordering and Delete */}
-            <div className="property-group" style={{ marginTop: '16px', borderTop: '1px solid rgba(255,255,255,0.3)', paddingTop: '16px' }}>
-              <label className="property-label">Qatlam Tartibi</label>
-              <div className="button-group-row" style={{ marginBottom: '8px' }}>
-                <button className="glass-btn prop-icon-btn" onClick={() => moveLayer(selectedElement.id, 'up')}>
-                  <ChevronUp size={14} />
-                  Ustiga
-                </button>
-                <button className="glass-btn prop-icon-btn" onClick={() => moveLayer(selectedElement.id, 'down')}>
-                  <ChevronDown size={14} />
-                  Ostiga
-                </button>
-              </div>
-              <button 
-                className="glass-btn" 
-                style={{ width: '100%', borderColor: '#ff4757', color: '#ff4757', background: 'rgba(255, 71, 87, 0.05)' }}
-                onClick={() => handleDeleteElement(selectedElement.id)}
-              >
-                <Trash2 size={14} />
-                Elementni oʻchirish
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Properties Sidebar Panel for Image */}
-        {selectedElement && selectedElement.type === 'image' && (
-          <div className="properties-panel glass-card glow-card-cyan no-print" onClick={(e) => e.stopPropagation()}>
-            <span className="panel-title" style={{ marginBottom: '12px', display: 'block' }}>Rasm Sozlamalari</span>
-            
-            <div className="property-group">
-              <label className="property-label">Harakatlar</label>
-              <button 
-                className="glass-btn" 
-                style={{ width: '100%', borderColor: '#ff4757', color: '#ff4757', background: 'rgba(255, 71, 87, 0.05)', marginBottom: '8px' }}
-                onClick={() => handleDeleteElement(selectedElement.id)}
-              >
-                <Trash2 size={14} />
-                Rasmni oʻchirish
-              </button>
-              
-              <div className="button-group-row">
-                <button className="glass-btn prop-icon-btn" onClick={() => moveLayer(selectedElement.id, 'up')}>
-                  <ChevronUp size={14} />
-                  Ustiga
-                </button>
-                <button className="glass-btn prop-icon-btn" onClick={() => moveLayer(selectedElement.id, 'down')}>
-                  <ChevronDown size={14} />
-                  Ostiga
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );
