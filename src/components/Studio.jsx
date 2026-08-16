@@ -292,9 +292,6 @@ export default function Studio({ initialTemplate, onBackToHome }) {
       {/* Sidebar Controls Panel */}
       <div className="studio-sidebar no-print">
         <div className="studio-header">
-          <button className="nav-item" onClick={onBackToHome} style={{ width: '36px', height: '36px' }}>
-            <ChevronLeft size={18} />
-          </button>
           <div className="studio-logo">
             <Printer size={20} />
           </div>
@@ -382,6 +379,40 @@ export default function Studio({ initialTemplate, onBackToHome }) {
 
       {/* Main Canvas Workspace Container */}
       <div className="studio-workspace">
+        {/* Ambient background decorations matching prompt aesthetics */}
+        <div className="organic-blob no-print" style={{ width: '400px', height: '400px', left: '-5%', top: '25%', opacity: 0.15, pointerEvents: 'none' }}></div>
+        <img 
+          src="/glass_purple_sofa.jpg" 
+          alt="" 
+          className="floating-sofa no-print" 
+          style={{ 
+            opacity: 0.15, 
+            pointerEvents: 'none', 
+            position: 'absolute', 
+            left: '30px', 
+            bottom: '30px', 
+            width: '160px', 
+            height: '160px', 
+            zIndex: 1,
+            borderRadius: '24px'
+          }} 
+        />
+        <img 
+          src="/glass_round_table.jpg" 
+          alt="" 
+          className="floating-table no-print" 
+          style={{ 
+            opacity: 0.12, 
+            pointerEvents: 'none', 
+            position: 'absolute', 
+            right: '30px', 
+            top: '120px', 
+            width: '130px', 
+            height: '130px', 
+            zIndex: 1,
+            borderRadius: '24px'
+          }} 
+        />
         {/* Workspace Top Toolbar */}
         <div className="workspace-toolbar no-print">
           <div className="zoom-controls">
