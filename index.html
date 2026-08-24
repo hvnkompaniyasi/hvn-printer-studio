@@ -22,13 +22,16 @@
             padding: 20px;
         }
 
+        main {
+            width: 100%;
+            max-width: 520px;
+        }
+
         .container {
             background: #111;
             border: 1px solid #333;
             border-radius: 8px;
             padding: 30px 25px;
-            width: 100%;
-            max-width: 520px;
             box-shadow: 0 0 30px rgba(255,255,255,0.03);
         }
 
@@ -43,7 +46,7 @@
         h1 small {
             display: block;
             font-size: 0.5em;
-            color: #888;
+            color: #aaa;
             letter-spacing: 4px;
             margin-top: 4px;
         }
@@ -54,7 +57,7 @@
         .form-group label {
             display: block;
             margin-bottom: 6px;
-            color: #bbb;
+            color: #ddd;
             font-size: 0.85em;
             text-transform: uppercase;
             letter-spacing: 1px;
@@ -155,7 +158,7 @@
 
         .btn-style {
             background: #1a1a1a;
-            color: #aaa;
+            color: #ccc;
             border: 1px solid #333;
         }
         .btn-style:hover {
@@ -174,7 +177,7 @@
             background: #1a1a1a;
             border-radius: 6px;
             text-align: center;
-            color: #aaa;
+            color: #ddd;
             font-size: 0.9em;
             letter-spacing: 1px;
         }
@@ -182,7 +185,7 @@
         .footer {
             margin-top: 20px;
             text-align: center;
-            color: #444;
+            color: #aaa;
             font-size: 0.75em;
             letter-spacing: 1px;
         }
@@ -190,48 +193,50 @@
 </head>
 <body>
 
-<div class="container">
-    <h1>HVN Studio <small>PRO PRINTER</small></h1>
+<main>
+    <div class="container">
+        <h1>HVN Studio <small>PRO PRINTER</small></h1>
 
-    <div class="form-group">
-        <label for="textInput">📝 Matn</label>
-        <textarea id="textInput" placeholder="Chop etiladigan matnni kiriting..."></textarea>
-    </div>
-
-    <div class="row">
         <div class="form-group">
-            <label for="fontSize">🔤 Shrift (px)</label>
-            <input type="number" id="fontSize" value="22" min="8" max="72" step="1">
+            <label for="textInput">📝 Matn</label>
+            <textarea id="textInput" placeholder="Chop etiladigan matnni kiriting..."></textarea>
         </div>
-        <div class="form-group">
-            <label for="paperSize">📄 Qog‘oz</label>
-            <select id="paperSize">
-                <option value="80x210">80 × 210 mm</option>
-                <option value="80x297" selected>80 × 297 mm</option>
-            </select>
+
+        <div class="row">
+            <div class="form-group">
+                <label for="fontSize">🔤 Shrift (px)</label>
+                <input type="number" id="fontSize" value="22" min="8" max="72" step="1">
+            </div>
+            <div class="form-group">
+                <label for="paperSize">📄 Qog‘oz</label>
+                <select id="paperSize">
+                    <option value="80x210">80 × 210 mm</option>
+                    <option value="80x297" selected>80 × 297 mm</option>
+                </select>
+            </div>
         </div>
-    </div>
 
-    <div class="form-group" style="margin-top: 12px;">
-        <label>🎨 Uslub</label>
-        <div class="btn-group">
-            <button id="boldToggle" class="btn btn-style">Qalin</button>
-            <button id="italicToggle" class="btn btn-style">Kursiv</button>
-            <button id="underlineToggle" class="btn btn-style">Tag chizish</button>
+        <div class="form-group" style="margin-top: 12px;">
+            <label>🎨 Uslub</label>
+            <div class="btn-group">
+                <button id="boldToggle" class="btn btn-style">Qalin</button>
+                <button id="italicToggle" class="btn btn-style">Kursiv</button>
+                <button id="underlineToggle" class="btn btn-style">Tag chizish</button>
+            </div>
         </div>
-    </div>
 
-    <div class="btn-group" style="margin-top: 24px;">
-        <button id="printBtn" class="btn btn-primary">🖨️ CHOP ETISH</button>
-        <button id="saveBtn" class="btn btn-secondary">💾 SAHIFANI SAQLASH</button>
-    </div>
+        <div class="btn-group" style="margin-top: 24px;">
+            <button id="printBtn" class="btn btn-primary">🖨️ CHOP ETISH</button>
+            <button id="saveBtn" class="btn btn-secondary">💾 SAHIFANI SAQLASH</button>
+        </div>
 
-    <div class="size-indicator" id="sizeIndicator">80 × 297 mm</div>
-    <div class="footer">XPrinter 80×210 / 80×297 uchun optimallashtirilgan</div>
-</div>
+        <div class="size-indicator" id="sizeIndicator">80 × 297 mm</div>
+        <div class="footer">XPrinter 80×210 / 80×297 uchun optimallashtirilgan</div>
+    </div>
+</main>
 
 <!-- Yashirin iframe (chop etish uchun) -->
-<iframe id="printFrame" style="position:absolute;left:-9999px;top:0;width:1px;height:1px;border:none;"></iframe>
+<iframe id="printFrame" title="Chop etish oynasi" style="position:absolute;left:-9999px;top:0;width:1px;height:1px;border:none;"></iframe>
 
 <script>
 (function() {
@@ -330,13 +335,11 @@
     function printViaIframe() {
         const html = buildPrintHTML();
         const frame = printFrame;
-        // To‘liq yuklanishini kutmagan holda yozamiz
         frame.srcdoc = html;
         frame.onload = function() {
-            // Iframe yuklangach chop dialogini ochamiz
             frame.contentWindow.print();
         };
-        // Agar onload ishlamasa, setTimeout fallback
+        // Fallback
         setTimeout(() => {
             if (frame.contentWindow) {
                 frame.contentWindow.print();
@@ -349,7 +352,6 @@
     }
 
     function saveDocument() {
-        // PDF sifatida saqlash uchun xuddi shu usul, lekin print dialogida "PDF sifatida saqlash" tanlanadi
         printViaIframe();
     }
 
