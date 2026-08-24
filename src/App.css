@@ -1,4 +1,15 @@
-/* Layout and page containers */
+/* ===== ASOSIY O'ZGARUVCHILAR (ROOT) ===== */
+:root {
+  --purple-solid: #8B5CF6;
+  --purple-dark: #6D28D9;
+  --cyan-solid: #06B6D4;
+  --text-main: #1e2229;
+  --text-muted: #64748B;
+  --font-serif: Georgia, serif;
+  --font-display: 'Inter', sans-serif;
+}
+
+/* ===== LAYOUT VA KONTEYNERLAR ===== */
 .app-container {
   min-height: 100vh;
   display: flex;
@@ -572,4 +583,80 @@
 .upload-placeholder span {
   font-size: 0.75rem;
   margin-top: 4px;
+}
+
+/* ============================================ */
+/* ===== CHOP ETISH (PRINT) UCHUN MAXSUS KOD ===== */
+/* ============================================ */
+@media print {
+  /* 1. Brauzerdagi barcha orqa fon, animatsiya va yordamchi elementlarni yashirish */
+  .no-print {
+    display: none !important;
+  }
+  
+  body, html {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: white !important;
+  }
+
+  /* 2. Barcha asosiy konteynerlarni to‘liq ko‘rinadigan va oq fonli qilish */
+  body, 
+  #root, 
+  .studio-workspace, 
+  .canvas-scroll-container,
+  .printable-sheet,
+  div, span, p, h1, h2, h3, h4, h5, h6, td, th, li, label, strong, b {
+    background: white !important;
+    color: black !important;
+    -webkit-text-fill-color: black !important; /* Safari uchun */
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+    border-color: #ccc !important;
+  }
+
+  /* 3. Chop etiladigan qog‘oz varag‘ini mukammal ko‘rinishga keltirish */
+  .printable-sheet {
+    border: 1px solid #ddd !important;
+    margin: 0 auto !important;
+    box-shadow: none !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    background-image: none !important; /* Orqa fondagi nuqtalarni olib tashlash */
+    border-radius: 0 !important;
+  }
+
+  /* 4. Shriftni majburlab oddiy va taniqli qilish (Inter o'rniga Arial) */
+  * {
+    font-family: Arial, Helvetica, sans-serif !important;
+  }
+
+  /* 5. Chap menyu, tepa panel, o'ng xususiyatlar paneli va tugmalarni yashirish */
+  .studio-sidebar, 
+  .workspace-toolbar, 
+  .properties-panel,
+  .action-buttons,
+  .btn-main-action {
+    display: none !important;
+  }
+
+  /* 6. Asosiy ish maydonini to‘liq ekran qilish va aylantirishni olib tashlash */
+  .studio-layout {
+    display: block !important;
+    height: auto !important;
+    overflow: visible !important;
+    grid-template-columns: 1fr !important;
+  }
+
+  /* 7. Barcha matnli elementlarni qora rangda chiqarishga majburlash */
+  p, span, div, h1, h2, h3, h4, td, th, li, strong, b, i, em, label, small {
+    color: black !important;
+    background: transparent !important;
+    -webkit-text-fill-color: black !important;
+  }
 }
