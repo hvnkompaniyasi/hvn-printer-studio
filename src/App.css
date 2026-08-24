@@ -41,7 +41,6 @@
   z-index: 10;
 }
 
-/* Large abstract shape on the left */
 .organic-blob {
   position: absolute;
   top: -10%;
@@ -102,7 +101,6 @@
   }
 }
 
-/* Floating 3D graphics container on the right */
 .hero-right {
   position: relative;
   display: flex;
@@ -158,7 +156,6 @@
   z-index: 2;
 }
 
-/* Showcase grid section */
 .showcase-section {
   padding: 100px 10%;
   background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.4));
@@ -327,7 +324,6 @@
   font-weight: 600;
 }
 
-/* Panel sections */
 .panel-section {
   display: flex;
   flex-direction: column;
@@ -362,7 +358,6 @@
   gap: 8px;
 }
 
-/* Paper format option grid */
 .format-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -418,7 +413,6 @@
   border-radius: 12px;
 }
 
-/* Center Workspace Area */
 .studio-workspace {
   background: #e9ecf0;
   display: flex;
@@ -462,7 +456,6 @@
   border: 1px solid rgba(139, 92, 246, 0.2);
 }
 
-/* Printable sheet scroll area */
 .canvas-scroll-container {
   flex-grow: 1;
   overflow: auto;
@@ -472,7 +465,6 @@
   padding: 40px;
 }
 
-/* The actual white printable paper sheet */
 .printable-sheet {
   background: white;
   box-shadow: 
@@ -486,10 +478,9 @@
   transition: transform 0.1s ease;
   transform-origin: top center;
   min-height: 200px;
-  padding: 10px; /* Ichkaridan biroz bo'sh joy */
+  padding: 10px;
 }
 
-/* Properties Sidebar Panel */
 .properties-panel {
   width: 240px;
   position: absolute;
@@ -532,7 +523,6 @@
   border-color: var(--purple-solid);
 }
 
-/* Color dot selector */
 .color-selector {
   display: flex;
   gap: 8px;
@@ -552,7 +542,6 @@
   transform: scale(1.15);
 }
 
-/* Image element styling */
 .canvas-image-el {
   width: 100%;
   height: 100%;
@@ -560,7 +549,6 @@
   pointer-events: none;
 }
 
-/* Drag Image Upload overlay placeholder */
 .upload-placeholder {
   display: flex;
   flex-direction: column;
@@ -587,46 +575,36 @@
   margin-top: 4px;
 }
 
-/* ========================================================= */
-/* ===== YANGI TUZATISH: MATNLAR PUSHTI RAMKALI VA JOYI ===== */
-/* ========================================================= */
-.printable-sheet > div:not(.no-border),
-.printable-sheet > p,
-.printable-sheet > span,
-.printable-sheet .text-block,
-.printable-sheet .draggable-element,
-.printable-sheet [draggable="true"],
-.printable-sheet .canvas-element,
-.printable-sheet .text-element,
-.printable-sheet .element-text {
-  border: 2px solid #ec4899 !important; /* Pushti ramka (pink border) */
+/* ================================================================ */
+/* ===== TUZATISH: MATNLAR PUSHTI RAMKALI (DRAG BUZILMAYDI) ===== */
+/* ================================================================ */
+/* MUHIM: .canvas-element o'zini position:absolute bo'lib qoladi, 
+   chunki uning left/top qiymatlari React tomonidan boshqariladi.
+   Faqat ichidagi matn kontentiga ramka qo'yamiz. */
+.canvas-element .element-text-content {
+  border: 2px solid #ec4899 !important; /* Pushti ramka */
   border-radius: 8px !important;
-  padding: 12px 16px !important;
-  margin: 16px 10px !important; /* Tepaga va yonlarga bo'sh joy */
-  position: relative !important;
-  top: auto !important;
-  left: auto !important;
-  transform: none !important;
-  display: block !important;
-  width: auto !important;
-  max-width: 100% !important;
+  padding: 8px 14px !important;
   background: white !important;
-  color: black !important;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06) !important;
-  min-height: 30px !important;
-  cursor: default !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06) !important;
+  min-height: 28px !important;
+  display: inline-block !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  margin: -4px 0 !important; /* Tashqi o'lchamni o'zgartirmaslik uchun */
 }
 
-/* Bir-biriga yopishib qolmasligi uchun qo'shimcha bo'sh joy */
-.printable-sheet > * + * {
-  margin-top: 20px !important;
+/* Tanlangan elementni ajratib ko'rsatish (mavjud border o'rniga) */
+.canvas-element.selected {
+  outline: 2px solid var(--purple-solid) !important;
+  outline-offset: 2px !important;
+  border-color: transparent !important;
 }
 
 /* ============================================ */
 /* ===== CHOP ETISH (PRINT) UCHUN MAXSUS KOD ===== */
 /* ============================================ */
 @media print {
-  /* 1. Brauzerdagi barcha orqa fon, animatsiya va yordamchi elementlarni yashirish */
   .no-print {
     display: none !important;
   }
@@ -637,7 +615,6 @@
     background: white !important;
   }
 
-  /* 2. Barcha asosiy konteynerlarni to‘liq ko‘rinadigan va oq fonli qilish */
   body, 
   #root, 
   .studio-workspace, 
@@ -657,7 +634,6 @@
     border-color: #ccc !important;
   }
 
-  /* 3. Chop etiladigan qog‘oz varag‘ini mukammal ko‘rinishga keltirish */
   .printable-sheet {
     border: 1px solid #ddd !important;
     margin: 0 auto !important;
@@ -669,12 +645,10 @@
     padding: 10px !important;
   }
 
-  /* 4. Shriftni majburlab oddiy va taniqli qilish */
   * {
     font-family: Arial, Helvetica, sans-serif !important;
   }
 
-  /* 5. Chap menyu, tepa panel, o'ng xususiyatlar paneli va tugmalarni yashirish */
   .studio-sidebar, 
   .workspace-toolbar, 
   .properties-panel,
@@ -683,7 +657,6 @@
     display: none !important;
   }
 
-  /* 6. Asosiy ish maydonini to‘liq ekran qilish va aylantirishni olib tashlash */
   .studio-layout {
     display: block !important;
     height: auto !important;
@@ -691,18 +664,16 @@
     grid-template-columns: 1fr !important;
   }
 
-  /* 7. Barcha matnli elementlarni qora rangda chiqarishga majburlash */
   p, span, div, h1, h2, h3, h4, td, th, li, strong, b, i, em, label, small {
     color: black !important;
     background: transparent !important;
     -webkit-text-fill-color: black !important;
   }
 
-  /* 8. Chop etishda pushti ramka qog'ozda ham ko'rinsa yaxshi (agar xohlasangiz, ushbu qismni olib tashlashingiz mumkin) */
-  .printable-sheet > div,
-  .printable-sheet > p,
-  .printable-sheet > span {
-    border: 1px solid #888 !important; /* Qog'ozda oddiy kulrang ramka */
+  /* Chop etishda pushti ramka o'rniga oddiy kulrang ramka */
+  .canvas-element .element-text-content {
+    border: 1px solid #888 !important;
     box-shadow: none !important;
+    background: white !important;
   }
 }
