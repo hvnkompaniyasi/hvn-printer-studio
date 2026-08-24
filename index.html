@@ -1,20 +1,401 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="HVN Printer Studio - Interactive high-end product designer and label printing suite. Design customized printables with premium glassmorphism layouts." />
-    
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
-    
-    <title>HVN Printer Studio — Premium Glassmorphism Designer & Print Suite</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HVN Studio – Pro Printer</title>
+    <style>
+        /* ---------- QORA DIZAYN ---------- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #000;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background: #111;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 30px 25px;
+            width: 100%;
+            max-width: 520px;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.03);
+        }
+
+        h1 {
+            text-align: center;
+            font-weight: 300;
+            letter-spacing: 2px;
+            margin-bottom: 4px;
+            color: #fff;
+            font-size: 28px;
+        }
+        h1 small {
+            display: block;
+            font-size: 0.5em;
+            color: #888;
+            letter-spacing: 4px;
+            margin-top: 4px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            color: #bbb;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 12px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            color: #fff;
+            border-radius: 6px;
+            resize: vertical;
+            font-family: inherit;
+            font-size: 1em;
+            min-height: 110px;
+            transition: border 0.2s;
+        }
+        textarea:focus {
+            outline: none;
+            border-color: #777;
+        }
+
+        .row {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .row .form-group {
+            flex: 1;
+            min-width: 120px;
+            margin-bottom: 0;
+        }
+
+        select,
+        input[type="number"] {
+            width: 100%;
+            padding: 10px 12px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            color: #fff;
+            border-radius: 6px;
+            font-size: 1em;
+            appearance: auto;
+        }
+        select:focus,
+        input:focus {
+            outline: none;
+            border-color: #777;
+        }
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 6px;
+        }
+        .btn-group .btn {
+            flex: 1;
+            min-width: 80px;
+        }
+
+        .btn {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.95em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            text-align: center;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: #fff;
+            color: #000;
+        }
+        .btn-primary:hover {
+            background: #ddd;
+        }
+
+        .btn-secondary {
+            background: #2a2a2a;
+            color: #fff;
+            border: 1px solid #444;
+        }
+        .btn-secondary:hover {
+            background: #3a3a3a;
+        }
+
+        .btn-style {
+            background: #1a1a1a;
+            color: #aaa;
+            border: 1px solid #333;
+        }
+        .btn-style:hover {
+            background: #2a2a2a;
+            color: #fff;
+        }
+        .btn-style.active {
+            background: #fff;
+            color: #000;
+            border-color: #fff;
+        }
+
+        .size-indicator {
+            margin-top: 14px;
+            padding: 10px;
+            background: #1a1a1a;
+            border-radius: 6px;
+            text-align: center;
+            color: #aaa;
+            font-size: 0.9em;
+            letter-spacing: 1px;
+        }
+
+        .footer {
+            margin-top: 20px;
+            text-align: center;
+            color: #444;
+            font-size: 0.75em;
+            letter-spacing: 1px;
+        }
+
+        /* Chop etish uchun yashirin qatlam */
+        .print-area {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>HVN Studio <small>PRO PRINTER</small></h1>
+
+        <!-- Matn kiritish -->
+        <div class="form-group">
+            <label for="textInput">📝 Matn</label>
+            <textarea id="textInput" placeholder="Chop etiladigan matnni kiriting..."></textarea>
+        </div>
+
+        <!-- Shrift o‘lchami va qog‘oz formati -->
+        <div class="row">
+            <div class="form-group">
+                <label for="fontSize">🔤 Shrift (px)</label>
+                <input type="number" id="fontSize" value="22" min="8" max="72" step="1">
+            </div>
+            <div class="form-group">
+                <label for="paperSize">📄 Qog‘oz</label>
+                <select id="paperSize">
+                    <option value="80x210">80 × 210 mm</option>
+                    <option value="80x297" selected>80 × 297 mm</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Uslub tugmalari -->
+        <div class="form-group" style="margin-top: 12px;">
+            <label>🎨 Uslub</label>
+            <div class="btn-group">
+                <button id="boldToggle" class="btn btn-style">Qalin</button>
+                <button id="italicToggle" class="btn btn-style">Kursiv</button>
+                <button id="underlineToggle" class="btn btn-style">Tag chizish</button>
+            </div>
+        </div>
+
+        <!-- Asosiy tugmalar -->
+        <div class="btn-group" style="margin-top: 24px;">
+            <button id="printBtn" class="btn btn-primary">🖨️ CHOP ETISH</button>
+            <button id="saveBtn" class="btn btn-secondary">💾 SAHIFANI SAQLASH</button>
+        </div>
+
+        <div class="size-indicator" id="sizeIndicator">80 × 297 mm</div>
+        <div class="footer">XPrinter 80×210 / 80×297 uchun optimallashtirilgan</div>
+    </div>
+
+    <!-- Chop etish uchun yashirin qatlam (faqat print oynasida ko‘rinadi) -->
+    <div class="print-area" id="printArea"></div>
+
+    <script>
+        (function() {
+            // DOM elementlar
+            const textInput = document.getElementById('textInput');
+            const fontSizeInput = document.getElementById('fontSize');
+            const paperSizeSelect = document.getElementById('paperSize');
+            const boldToggle = document.getElementById('boldToggle');
+            const italicToggle = document.getElementById('italicToggle');
+            const underlineToggle = document.getElementById('underlineToggle');
+            const printBtn = document.getElementById('printBtn');
+            const saveBtn = document.getElementById('saveBtn');
+            const sizeIndicator = document.getElementById('sizeIndicator');
+
+            // Holat
+            let isBold = false;
+            let isItalic = false;
+            let isUnderline = false;
+
+            // Indikatorni yangilash
+            function updateIndicator() {
+                const label = paperSizeSelect.options[paperSizeSelect.selectedIndex].text;
+                sizeIndicator.textContent = label;
+            }
+            paperSizeSelect.addEventListener('change', updateIndicator);
+            updateIndicator();
+
+            // Uslub tugmalari
+            function toggleStyle(btn, stateVar, setState, labelOn, labelOff) {
+                return function() {
+                    const newState = !stateVar;
+                    setState(newState);
+                    btn.classList.toggle('active', newState);
+                    btn.textContent = newState ? labelOn : labelOff;
+                };
+            }
+
+            boldToggle.addEventListener('click', toggleStyle(
+                boldToggle, isBold, (v) => isBold = v, 'Qalin (yoqilgan)', 'Qalin'
+            ));
+            italicToggle.addEventListener('click', toggleStyle(
+                italicToggle, isItalic, (v) => isItalic = v, 'Kursiv (yoqilgan)', 'Kursiv'
+            ));
+            underlineToggle.addEventListener('click', toggleStyle(
+                underlineToggle, isUnderline, (v) => isUnderline = v, 'Tag chizish (yoqilgan)', 'Tag chizish'
+            ));
+
+            // Chop etish uchun HTML tayyorlash – matn markazda
+            function buildPrintContent() {
+                const text = textInput.value.trim() || 'Matn kiriting';
+                const fontSize = parseInt(fontSizeInput.value, 10) || 22;
+                const paperSize = paperSizeSelect.value; // "80x210" yoki "80x297"
+                const [width, height] = paperSize.split('x').map(Number);
+
+                // Asosiy uslub – matn markazda (center), vertikal va gorizontal markaz
+                let style = `
+                    font-size: ${fontSize}px;
+                    font-family: Arial, Helvetica, sans-serif;
+                    color: #000;
+                    background: #fff;
+                    margin: 0;
+                    padding: 0;
+                    width: 100%;
+                    height: 100%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    text-align: center;
+                    line-height: 1.5;
+                    word-wrap: break-word;
+                    white-space: pre-wrap;
+                    box-sizing: border-box;
+                `;
+                if (isBold) style += ' font-weight: bold;';
+                if (isItalic) style += ' font-style: italic;';
+                if (isUnderline) style += ' text-decoration: underline;';
+
+                return `
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <meta charset="UTF-8">
+                        <title>Chop etish</title>
+                        <style>
+                            @page {
+                                size: ${width}mm ${height}mm;
+                                margin: 0;
+                            }
+                            body {
+                                margin: 0;
+                                padding: 0;
+                                background: #fff;
+                                width: ${width}mm;
+                                height: ${height}mm;
+                                overflow: hidden;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                            }
+                            .content {
+                                ${style}
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="content">${text}</div>
+                    </body>
+                    </html>
+                `;
+            }
+
+            // Chop etish
+            function printDocument() {
+                const content = buildPrintContent();
+                const win = window.open('', '_blank', 'width=800,height=600');
+                if (!win) {
+                    alert('Iltimos, pop-up blokirovkasini o‘chiring yoki ruxsat bering.');
+                    return;
+                }
+                win.document.write(content);
+                win.document.close();
+                win.focus();
+                win.print();
+            }
+
+            // Saqlash (PDF sifatida)
+            function saveDocument() {
+                const content = buildPrintContent();
+                const win = window.open('', '_blank', 'width=800,height=600');
+                if (!win) {
+                    alert('Iltimos, pop-up blokirovkasini o‘chiring yoki ruxsat bering.');
+                    return;
+                }
+                win.document.write(content);
+                win.document.close();
+                win.focus();
+                win.print(); // Chop dialogida "PDF sifatida saqlash" tanlanadi
+            }
+
+            printBtn.addEventListener('click', printDocument);
+            saveBtn.addEventListener('click', saveDocument);
+
+            // Klaviatura yordami: Ctrl+Enter – chop etish
+            document.addEventListener('keydown', function(e) {
+                if (e.ctrlKey && e.key === 'Enter') {
+                    e.preventDefault();
+                    printDocument();
+                }
+            });
+
+        })();
+    </script>
+
+</body>
 </html>
