@@ -588,15 +588,17 @@
   display: inline-block !important;
   width: 100% !important;
   box-sizing: border-box !important;
-  margin: -4px 0 !important; /* Ichkaridagi bo'shliqni to'g'rilash */
+  margin: -4px 0 !important;
 }
 
-/* Tanlangan elementni ajratib ko'rsatish (ichki ramkaga ta'sir qilmaydi) */
-.canvas-element.selected {
-  outline: 2px solid var(--purple-solid) !important;
-  outline-offset: 2px !important;
+/* .canvas-element ning o'zida hech qanday border/outline yo'q */
+.canvas-element {
   border: none !important;
+  outline: none !important;
 }
+
+/* Tanlangan elementni ajratib ko'rsatish faqat matn ichidagi pushti ramka orqali bo'ladi */
+/* Hech qanday qo'shimcha ramka yoki outline qo'shmaymiz */
 
 /* Rasmlar uchun hech qanday ramka qo'shmaymiz (faqat matnlar) */
 .canvas-element:has(.canvas-image-el) .element-text-content {
