@@ -485,6 +485,8 @@
   border-radius: 2px;
   transition: transform 0.1s ease;
   transform-origin: top center;
+  min-height: 200px;
+  padding: 10px; /* Ichkaridan biroz bo'sh joy */
 }
 
 /* Properties Sidebar Panel */
@@ -585,6 +587,41 @@
   margin-top: 4px;
 }
 
+/* ========================================================= */
+/* ===== YANGI TUZATISH: MATNLAR PUSHTI RAMKALI VA JOYI ===== */
+/* ========================================================= */
+.printable-sheet > div:not(.no-border),
+.printable-sheet > p,
+.printable-sheet > span,
+.printable-sheet .text-block,
+.printable-sheet .draggable-element,
+.printable-sheet [draggable="true"],
+.printable-sheet .canvas-element,
+.printable-sheet .text-element,
+.printable-sheet .element-text {
+  border: 2px solid #ec4899 !important; /* Pushti ramka (pink border) */
+  border-radius: 8px !important;
+  padding: 12px 16px !important;
+  margin: 16px 10px !important; /* Tepaga va yonlarga bo'sh joy */
+  position: relative !important;
+  top: auto !important;
+  left: auto !important;
+  transform: none !important;
+  display: block !important;
+  width: auto !important;
+  max-width: 100% !important;
+  background: white !important;
+  color: black !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06) !important;
+  min-height: 30px !important;
+  cursor: default !important;
+}
+
+/* Bir-biriga yopishib qolmasligi uchun qo'shimcha bo'sh joy */
+.printable-sheet > * + * {
+  margin-top: 20px !important;
+}
+
 /* ============================================ */
 /* ===== CHOP ETISH (PRINT) UCHUN MAXSUS KOD ===== */
 /* ============================================ */
@@ -609,7 +646,7 @@
   div, span, p, h1, h2, h3, h4, h5, h6, td, th, li, label, strong, b {
     background: white !important;
     color: black !important;
-    -webkit-text-fill-color: black !important; /* Safari uchun */
+    -webkit-text-fill-color: black !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
     color-adjust: exact !important;
@@ -627,11 +664,12 @@
     box-shadow: none !important;
     width: 100% !important;
     max-width: 100% !important;
-    background-image: none !important; /* Orqa fondagi nuqtalarni olib tashlash */
+    background-image: none !important;
     border-radius: 0 !important;
+    padding: 10px !important;
   }
 
-  /* 4. Shriftni majburlab oddiy va taniqli qilish (Inter o'rniga Arial) */
+  /* 4. Shriftni majburlab oddiy va taniqli qilish */
   * {
     font-family: Arial, Helvetica, sans-serif !important;
   }
@@ -658,5 +696,13 @@
     color: black !important;
     background: transparent !important;
     -webkit-text-fill-color: black !important;
+  }
+
+  /* 8. Chop etishda pushti ramka qog'ozda ham ko'rinsa yaxshi (agar xohlasangiz, ushbu qismni olib tashlashingiz mumkin) */
+  .printable-sheet > div,
+  .printable-sheet > p,
+  .printable-sheet > span {
+    border: 1px solid #888 !important; /* Qog'ozda oddiy kulrang ramka */
+    box-shadow: none !important;
   }
 }
