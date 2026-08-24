@@ -31,6 +31,7 @@ export default function Studio({ initialTemplate, onBackToHome }) {
   const [historyIndex, setHistoryIndex] = useState(0);
 
   const dragStartRef = useRef({ x: 0, y: 0, elX: 0, elY: 0, width: 0, height: 0, action: null });
+  const selectedIdRef = useRef(null); // <-- YANGI: drag paytida tanlangan ID ni saqlash uchun
   const sheetRef = useRef(null);
 
   // Load template if provided
@@ -38,11 +39,9 @@ export default function Studio({ initialTemplate, onBackToHome }) {
     if (initialTemplate) {
       setPaperFormat(initialTemplate.format || '80x297');
       setElements(initialTemplate.elements || []);
-      // Initialize history with template
       setHistory([initialTemplate.elements || []]);
       setHistoryIndex(0);
     } else {
-      // blank sheet setup
       setElements([]);
       setHistory([[]]);
       setHistoryIndex(0);
@@ -102,7 +101,7 @@ export default function Studio({ initialTemplate, onBackToHome }) {
     const newEl = {
       id: `image-${Date.now()}`,
       type: 'image',
-      src: '', // empty to trigger upload placeholder
+      src: '',
       x: 30,
       y: 100,
       width: 150,
@@ -138,17 +137,17 @@ export default function Studio({ initialTemplate, onBackToHome }) {
     pushToHistory(elements);
   };
 
-  // Draggable / Resizable Mouse Listeners
+  // Draggable / Resizable Mouse Listeners (TUZATILGAN)
   const handleElementMouseDown = (e, el, action) => {
     e.stopPropagation();
     setSelectedId(el.id);
+    selectedIdRef.current = el.id; // <-- ref ga saqlaymiz
 
     // If this text element is currently being edited, don't start dragging
     if (editingId === el.id && action === 'drag') {
       return;
     }
     
-    // Disable text selection drag during sizing/dragging
     e.preventDefault();
 
     const clientX = e.clientX;
@@ -161,7 +160,7 @@ export default function Studio({ initialTemplate, onBackToHome }) {
       elY: el.y,
       width: el.width,
       height: el.height,
-      action: action // 'drag' or 'resize'
+      action: action
     };
 
     document.addEventListener('mousemove', handleElementMouseMove);
@@ -172,16 +171,18 @@ export default function Studio({ initialTemplate, onBackToHome }) {
     const start = dragStartRef.current;
     if (!start.action) return;
 
-    // Adjust delta based on zoom level to ensure accurate movement
     const dx = (e.clientX - start.x) / zoom;
     const dy = (e.clientY - start.y) / zoom;
+
+    const currentId = selectedIdRef.current; // <-- ref dan olamiz
+    if (!currentId) return;
 
     if (start.action === 'drag') {
       const newX = Math.max(0, start.elX + dx);
       const newY = Math.max(0, start.elY + dy);
       
       setElements(prev => prev.map(el => {
-        if (el.id === selectedId) {
+        if (el.id === currentId) {
           return { ...el, x: Math.round(newX), y: Math.round(newY) };
         }
         return el;
@@ -191,7 +192,7 @@ export default function Studio({ initialTemplate, onBackToHome }) {
       const newHeight = Math.max(20, start.height + dy);
 
       setElements(prev => prev.map(el => {
-        if (el.id === selectedId) {
+        if (el.id === currentId) {
           return { ...el, width: Math.round(newWidth), height: Math.round(newHeight) };
         }
         return el;
@@ -204,9 +205,14 @@ export default function Studio({ initialTemplate, onBackToHome }) {
     document.removeEventListener('mouseup', handleElementMouseUp);
     
     if (dragStartRef.current.action) {
-      pushToHistory(elements);
+      // History ni saqlash uchun elements ni ishlatamiz, lekin u hali yangilanmagan bo'lishi mumkin
+      // Shuning uchun setTimeout bilan keyingi tsiklga qoldiramiz
+      setTimeout(() => {
+        pushToHistory(elements);
+      }, 0);
     }
     dragStartRef.current.action = null;
+    selectedIdRef.current = null;
   };
 
   // Image Upload handler
@@ -216,7 +222,6 @@ export default function Studio({ initialTemplate, onBackToHome }) {
       const reader = new FileReader();
       reader.onload = (event) => {
         updateElementProp(id, 'src', event.target.result);
-        // save to history
         setTimeout(() => pushToHistory(elements), 50);
       };
       reader.readAsDataURL(file);
@@ -253,11 +258,9 @@ export default function Studio({ initialTemplate, onBackToHome }) {
     const sheetElement = sheetRef.current;
     if (!sheetElement) return;
 
-    // Temporarily deselect element
     const prevSelected = selectedId;
     setSelectedId(null);
 
-    // Give react brief moment to clear borders
     setTimeout(() => {
       html2canvas(sheetElement, {
         scale: 2,
@@ -268,8 +271,6 @@ export default function Studio({ initialTemplate, onBackToHome }) {
         link.download = `hvn_studio_${paperFormat}_${Date.now()}.png`;
         link.href = canvas.toDataURL('image/png');
         link.click();
-        
-        // Restore selection
         setSelectedId(prevSelected);
       }).catch(err => {
         console.error('Error saving image:', err);
@@ -283,7 +284,6 @@ export default function Studio({ initialTemplate, onBackToHome }) {
     const prevSelected = selectedId;
     setSelectedId(null);
 
-    // Wait for highlight borders to disappear
     setTimeout(() => {
       window.print();
       setSelectedId(prevSelected);
@@ -535,9 +535,7 @@ export default function Studio({ initialTemplate, onBackToHome }) {
                 key={f.id}
                 onClick={() => {
                   setPaperFormat(f.id);
-                  // Push state change to history
-                  const updated = elements;
-                  pushToHistory(updated);
+                  pushToHistory(elements);
                 }}
               >
                 <span className="format-name">{f.name}</span>
@@ -658,11 +656,9 @@ export default function Studio({ initialTemplate, onBackToHome }) {
                       onDoubleClick={(e) => {
                         e.stopPropagation();
                         setEditingId(el.id);
-                        // Focus and place cursor at click position
                         setTimeout(() => {
                           const textDiv = e.target;
                           textDiv.focus();
-                          // Place cursor at end
                           const range = document.createRange();
                           const sel = window.getSelection();
                           range.selectNodeContents(textDiv);
@@ -718,8 +714,6 @@ export default function Studio({ initialTemplate, onBackToHome }) {
             </div>
           </div>
         </div>
-
-
       </div>
     </div>
   );
