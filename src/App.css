@@ -262,7 +262,7 @@
   color: var(--purple-dark);
 }
 
-/* Studio/Workspace Editor Styles */
+/* ===== STUDIO WORKSPACE ===== */
 .studio-layout {
   display: grid;
   grid-template-columns: 300px 1fr;
@@ -467,9 +467,7 @@
 
 .printable-sheet {
   background: white;
-  box-shadow: 
-    0 15px 35px rgba(0, 0, 0, 0.08),
-    0 5px 15px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08), 0 5px 15px rgba(0, 0, 0, 0.04);
   position: relative;
   background-image: radial-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px);
   background-size: 15px 15px;
@@ -575,14 +573,13 @@
   margin-top: 4px;
 }
 
-/* ================================================================ */
-/* ===== TUZATISH: MATNLAR PUSHTI RAMKALI (DRAG BUZILMAYDI) ===== */
-/* ================================================================ */
-/* MUHIM: .canvas-element o'zini position:absolute bo'lib qoladi, 
-   chunki uning left/top qiymatlari React tomonidan boshqariladi.
-   Faqat ichidagi matn kontentiga ramka qo'yamiz. */
+/* ======================================================= */
+/* ===== MATNLAR UCHUN YAGONA PUSHTI RAMKA (BIRTA) ===== */
+/* ======================================================= */
+/* .canvas-element o'zini absolute bo'lib qoladi, hech qanday border qo'shmaymiz */
+/* Faqat ichidagi matn kontentiga ramka qo'yamiz */
 .canvas-element .element-text-content {
-  border: 2px solid #ec4899 !important; /* Pushti ramka */
+  border: 2px solid #ec4899 !important; /* Bitta pushti ramka */
   border-radius: 8px !important;
   padding: 8px 14px !important;
   background: white !important;
@@ -591,14 +588,22 @@
   display: inline-block !important;
   width: 100% !important;
   box-sizing: border-box !important;
-  margin: -4px 0 !important; /* Tashqi o'lchamni o'zgartirmaslik uchun */
+  margin: -4px 0 !important; /* Ichkaridagi bo'shliqni to'g'rilash */
 }
 
-/* Tanlangan elementni ajratib ko'rsatish (mavjud border o'rniga) */
+/* Tanlangan elementni ajratib ko'rsatish (ichki ramkaga ta'sir qilmaydi) */
 .canvas-element.selected {
   outline: 2px solid var(--purple-solid) !important;
   outline-offset: 2px !important;
-  border-color: transparent !important;
+  border: none !important;
+}
+
+/* Rasmlar uchun hech qanday ramka qo'shmaymiz (faqat matnlar) */
+.canvas-element:has(.canvas-image-el) .element-text-content {
+  border: none !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+  background: transparent !important;
 }
 
 /* ============================================ */
@@ -670,7 +675,7 @@
     -webkit-text-fill-color: black !important;
   }
 
-  /* Chop etishda pushti ramka o'rniga oddiy kulrang ramka */
+  /* Chop etishda pushti ramka o'rniga oddiy kulrang ramka (faqat matnlarga) */
   .canvas-element .element-text-content {
     border: 1px solid #888 !important;
     box-shadow: none !important;
