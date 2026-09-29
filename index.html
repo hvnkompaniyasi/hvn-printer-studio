@@ -252,6 +252,7 @@
     const printFrame = document.getElementById('printFrame');
 
     let isBold = false, isItalic = false, isUnderline = false;
+    let isPrinting = false; // Ikki marta chop etishni oldini olish uchun
 
     function updateIndicator() {
         sizeIndicator.textContent = paperSizeSelect.options[paperSizeSelect.selectedIndex].text;
@@ -259,18 +260,25 @@
     paperSizeSelect.addEventListener('change', updateIndicator);
     updateIndicator();
 
-    function toggleStyle(btn, stateVar, setState, labelOn, labelOff) {
+    function toggleStyle(btn, getState, setState, labelOn, labelOff) {
         return function() {
-            const newState = !stateVar;
+            const newState = !getState();
             setState(newState);
             btn.classList.toggle('active', newState);
             btn.textContent = newState ? labelOn : labelOff;
         };
     }
 
-    boldToggle.addEventListener('click', toggleStyle(boldToggle, isBold, v => isBold = v, 'Qalin (yoqilgan)', 'Qalin'));
-    italicToggle.addEventListener('click', toggleStyle(italicToggle, isItalic, v => isItalic = v, 'Kursiv (yoqilgan)', 'Kursiv'));
-    underlineToggle.addEventListener('click', toggleStyle(underlineToggle, isUnderline, v => isUnderline = v, 'Tag chizish (yoqilgan)', 'Tag chizish'));
+    boldToggle.addEventListener('click', toggleStyle(boldToggle, () => isBold, v => isBold = v, 'Qalin (yoqilgan)', 'Qalin'));
+    italicToggle.addEventListener('click', toggleStyle(italicToggle, () => isItalic, v => isItalic = v, 'Kursiv (yoqilgan)', 'Kursiv'));
+    underlineToggle.addEventListener('click', toggleStyle(underlineToggle, () => isUnderline, v => isUnderline = v, 'Tag chizish (yoqilgan)', 'Tag chizish'));
+
+    function escapeHtml(text) {
+        return text
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+    }
 
     function buildPrintHTML() {
         let raw = textInput.value;
@@ -278,6 +286,7 @@
         const processed = lines.map(line => line.replace(/\s+/g, ' ').trim());
         let finalText = processed.join('\n');
         if (!finalText.trim()) finalText = 'Matn kiriting';
+        finalText = escapeHtml(finalText);
 
         const fontSize = parseInt(fontSizeInput.value, 10) || 22;
         const paperSize = paperSizeSelect.value;
@@ -333,18 +342,25 @@
     }
 
     function printViaIframe() {
+        if (isPrinting) return; // Agar allaqachon chop etilayotgan bo'lsa, qayta ishga tushirmaymiz
+        isPrinting = true;
+
         const html = buildPrintHTML();
         const frame = printFrame;
-        frame.srcdoc = html;
+
         frame.onload = function() {
-            frame.contentWindow.print();
-        };
-        // Fallback
-        setTimeout(() => {
-            if (frame.contentWindow) {
+            frame.onload = null; // Faqat bir marta ishga tushishi kafolatlanadi
+            try {
+                frame.contentWindow.focus();
                 frame.contentWindow.print();
+            } catch (e) {
+                console.error('Chop etishda xatolik:', e);
             }
-        }, 1000);
+            // Chop etish oynasi yopilgach, bayroqni tiklash
+            setTimeout(() => { isPrinting = false; }, 2000);
+        };
+
+        frame.srcdoc = html;
     }
 
     function printDocument() {
