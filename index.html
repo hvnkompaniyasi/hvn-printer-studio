@@ -252,7 +252,7 @@
     const printFrame = document.getElementById('printFrame');
 
     let isBold = false, isItalic = false, isUnderline = false;
-    let isPrinting = false; // Ikki marta chop etishni oldini olish uchun
+    let isPrinting = false;
 
     function updateIndicator() {
         sizeIndicator.textContent = paperSizeSelect.options[paperSizeSelect.selectedIndex].text;
@@ -292,7 +292,7 @@
         const paperSize = paperSizeSelect.value;
         const [width, height] = paperSize.split('x').map(Number);
 
-        let style = `
+        let contentStyle = `
             font-size: ${fontSize}px;
             font-family: Arial, Helvetica, sans-serif;
             color: #000;
@@ -300,19 +300,15 @@
             margin: 0;
             padding: 0;
             width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             text-align: center;
             line-height: 1.5;
             word-wrap: break-word;
             white-space: pre-wrap;
             box-sizing: border-box;
         `;
-        if (isBold) style += ' font-weight: bold;';
-        if (isItalic) style += ' font-style: italic;';
-        if (isUnderline) style += ' text-decoration: underline;';
+        if (isBold) contentStyle += ' font-weight: bold;';
+        if (isItalic) contentStyle += ' font-style: italic;';
+        if (isUnderline) contentStyle += ' text-decoration: underline;';
 
         return `
             <!DOCTYPE html>
@@ -322,16 +318,18 @@
                 <title>Chop etish</title>
                 <style>
                     @page { size: ${width}mm ${height}mm; margin: 0; }
-                    body {
-                        margin: 0; padding: 0;
+                    html, body {
+                        margin: 0;
+                        padding: 0;
                         background: #fff;
-                        width: ${width}mm; height: ${height}mm;
+                        width: ${width}mm;
+                        height: ${height}mm;
                         overflow: hidden;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
                     }
-                    .content { ${style} }
+                    .content {
+                        ${contentStyle}
+                        padding: 2mm 3mm 0 3mm;
+                    }
                 </style>
             </head>
             <body>
@@ -342,21 +340,20 @@
     }
 
     function printViaIframe() {
-        if (isPrinting) return; // Agar allaqachon chop etilayotgan bo'lsa, qayta ishga tushirmaymiz
+        if (isPrinting) return;
         isPrinting = true;
 
         const html = buildPrintHTML();
         const frame = printFrame;
 
         frame.onload = function() {
-            frame.onload = null; // Faqat bir marta ishga tushishi kafolatlanadi
+            frame.onload = null;
             try {
                 frame.contentWindow.focus();
                 frame.contentWindow.print();
             } catch (e) {
                 console.error('Chop etishda xatolik:', e);
             }
-            // Chop etish oynasi yopilgach, bayroqni tiklash
             setTimeout(() => { isPrinting = false; }, 2000);
         };
 
